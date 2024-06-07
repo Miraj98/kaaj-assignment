@@ -23,8 +23,16 @@ class Database:
         self.cursor.close()
         self.conn.close()
 
-    def search_query(self, search_str: str | None = None, cursor: int = 0):
-        q = f"SELECT * FROM licenses WHERE name ILIKE '{search_str}%' AND id > {cursor} ORDER BY id LIMIT 50" if search_str else f"SELECT * FROM licenses WHERE id > {cursor}  ORDER BY id LIMIT 50"
+    def search_query(self, name: str | None = None, city: str | None = None, state: str | None = None, cursor: int | None = 0, page_size: int | None = 50):
+        where = f"name ILIKE '{name}%'" if name else ""
+        if city:
+            where += " AND " if where else ""
+            where = f"city ILIKE '{city}%'" if city else ""
+        if state:
+            where += " AND " if where else ""
+            where = f"state ILIKE '{state}%'" if city else ""
+
+        q = f"SELECT * FROM licenses WHERE {where} AND id > {cursor} ORDER BY id LIMIT {page_size}" if where else f"SELECT * FROM licenses WHERE id > {cursor}  ORDER BY id LIMIT {page_size}"
         try:
             self.cursor.execute(q)
             res = self.cursor.fetchall()
