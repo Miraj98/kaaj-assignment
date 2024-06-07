@@ -1,3 +1,6 @@
+from dotenv import load_dotenv
+load_dotenv()
+
 import os
 import psycopg2
 from psycopg2.extras import RealDictCursor
@@ -20,8 +23,8 @@ class Database:
         self.cursor.close()
         self.conn.close()
 
-    def search_query(self, search_str: str):
-        q = f"SELECT * FROM licenses WHERE name ILIKE '{search_str}%'"
+    def search_query(self, search_str: str | None = None, cursor: int = 0):
+        q = f"SELECT * FROM licenses WHERE name ILIKE '{search_str}%' AND id > {cursor} ORDER BY id LIMIT 50" if search_str else f"SELECT * FROM licenses WHERE id > {cursor}  ORDER BY id LIMIT 50"
         try:
             self.cursor.execute(q)
             res = self.cursor.fetchall()
@@ -32,5 +35,8 @@ class Database:
 
 if __name__ == "__main__":
     db = Database()
-    db.search_query("ed")
+    res = db.search_query()
+    if res:
+        print(res)
+        print("Total len:", len(res))
     db.close()
