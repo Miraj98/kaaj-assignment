@@ -32,7 +32,10 @@ class Database:
             where += " AND " if where else ""
             where = f"state ILIKE '{state}%'" if city else ""
 
-        q = f"SELECT * FROM licenses WHERE {where} AND id > {cursor} ORDER BY id LIMIT {page_size}" if where else f"SELECT * FROM licenses WHERE id > {cursor}  ORDER BY id LIMIT {page_size}"
+        print("WHERE clause: ", where)
+        print("WHERE present: ", True if where else False)
+
+        q = f"SELECT * FROM licenses WHERE {where} AND id > {cursor} ORDER BY id LIMIT {page_size}" if where else f"SELECT * FROM licenses WHERE id > {cursor} ORDER BY id LIMIT {page_size}"
         try:
             self.cursor.execute(q)
             res = self.cursor.fetchall()
